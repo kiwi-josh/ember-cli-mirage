@@ -2,7 +2,9 @@ import ENV from '../config/environment';
 import getRfc232TestContext from 'ember-cli-mirage/get-rfc232-test-context';
 import startMirageImpl from 'ember-cli-mirage/start-mirage';
 import * as config from '../mirage/config';
-const { default: makeServer } = config;
+import { AppSymbolForEmberDataModels } from 'ember-cli-mirage/utils/ember-data';
+
+const { default: makeServer, baseConfig, testConfig } = config;
 
 //
 // This initializer does two things:
@@ -16,6 +18,18 @@ const { default: makeServer } = config;
 export default {
   name: 'ember-cli-mirage',
   initialize(application) {
+    window[AppSymbolForEmberDataModels] = application;
+
+    if (baseConfig) {
+      application.register('mirage:base-config', baseConfig, {
+        instantiate: false,
+      });
+    }
+    if (testConfig) {
+      application.register('mirage:test-config', testConfig, {
+        instantiate: false,
+      });
+    }
     if (makeServer) {
       application.register('mirage:make-server', makeServer, {
         instantiate: false,
